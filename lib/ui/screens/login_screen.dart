@@ -52,18 +52,24 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(
+              Icon(
                 Icons.health_and_safety,
-                size: 80,
-                color: Colors.green,
+                size: 100,
+                color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 32),
               const Text(
-                'Ingresa tu número de celular',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                '¡Bienvenido a QuickMed!',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
+              Text(
+                'Ingresa tu número de celular para entrar. No necesitas contraseñas complicadas.',
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,

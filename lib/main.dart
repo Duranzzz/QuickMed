@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'ui/screens/login_screen.dart';
 
@@ -21,10 +22,7 @@ class QuickMedApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'QuickMed MVP',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       home: const LoginScreen(),
     );
   }
