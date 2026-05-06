@@ -117,12 +117,12 @@ class _OtpScreenState extends State<OtpScreen> with SingleTickerProviderStateMix
         title: const Text('Verificación de seguridad'),
         centerTitle: true,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SizedBox(height: 24),
             Icon(
               Icons.sms_outlined,
               size: 80,

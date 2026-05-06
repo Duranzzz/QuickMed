@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
         title: const Text('Bienvenido a QuickMed'),
         centerTitle: true,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
@@ -51,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const SizedBox(height: 40),
               Icon(
                 Icons.health_and_safety,
                 size: 100,
@@ -82,8 +83,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, ingresa tu número';
                   }
-                  if (value.length < 8) {
-                    return 'El número debe tener al menos 8 dígitos';
+                  if (value.length != 8) {
+                    return 'El número debe tener exactamente 8 dígitos';
+                  }
+                  if (!value.startsWith('6') && !value.startsWith('7')) {
+                    return 'Número inválido. En Bolivia los números empiezan con 6 o 7';
                   }
                   return null;
                 },
