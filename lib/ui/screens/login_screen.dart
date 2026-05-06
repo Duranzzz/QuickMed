@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,10 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
       final success = await authProvider.loginWithPhone(_phoneController.text);
       
       if (success && mounted) {
-        // Por ahora, solo mostramos un SnackBar. 
-        // En la HU 2, aquí navegaremos a la pantalla de OTP.
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Número validado. (Próximamente: OTP)')),
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const OtpScreen()),
         );
       }
     }
