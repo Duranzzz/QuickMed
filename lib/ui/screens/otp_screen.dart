@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import 'symptoms_screen.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -85,12 +86,9 @@ class _OtpScreenState extends State<OtpScreen> with SingleTickerProviderStateMix
     if (!mounted) return;
 
     if (error == null) {
-      // Éxito: en futuras HU navegaremos al triaje
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ ¡Verificación exitosa! Bienvenido a QuickMed.'),
-          backgroundColor: Colors.green,
-        ),
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const SymptomsScreen()),
       );
     } else {
       setState(() {
