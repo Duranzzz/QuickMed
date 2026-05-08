@@ -44,4 +44,16 @@ class TriageProvider extends ChangeNotifier {
     notifyListeners();
     return true;
   }
+
+  PainLevel get currentPainLevel => _session?.painLevel ?? PainLevel.none;
+
+  Future<bool> savePainLevel(PainLevel level) async {
+    if (_session == null) return false;
+    _isLoading = true;
+    notifyListeners();
+    await _repository.savePainLevel(_session!.userId, level);
+    _isLoading = false;
+    notifyListeners();
+    return true;
+  }
 }

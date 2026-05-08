@@ -31,4 +31,12 @@ class TriageMockRepository {
     await Future.delayed(const Duration(milliseconds: 800));
     return _sessions.values.toList();
   }
+
+  /// Persiste el nivel de dolor en la sesión activa del usuario.
+  Future<void> savePainLevel(String userId, PainLevel level) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final session = _sessions[userId];
+    if (session == null) throw Exception('No hay sesión de triaje activa.');
+    session.painLevel = level;
+  }
 }
