@@ -56,4 +56,16 @@ class TriageProvider extends ChangeNotifier {
     notifyListeners();
     return true;
   }
+
+  // --- Dashboard del médico ---
+  List<TriageSession> _triageQueue = [];
+  List<TriageSession> get triageQueue => List.unmodifiable(_triageQueue);
+
+  Future<void> fetchTriageQueue() async {
+    _isLoading = true;
+    notifyListeners();
+    _triageQueue = await _repository.getTriageQueue();
+    _isLoading = false;
+    notifyListeners();
+  }
 }
