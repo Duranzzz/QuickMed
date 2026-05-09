@@ -71,11 +71,11 @@ void main() {
     });
   });
 
-  group('TriageMockRepository - getAllSessions', () {
+  group('TriageMockRepository - getTriageQueue', () {
     test('Devuelve las sesiones registradas', () async {
       // Crear otra sesión
       await repository.startSession('otro-usuario');
-      final sessions = await repository.getAllSessions();
+      final sessions = await repository.getTriageQueue();
       expect(sessions.length, greaterThanOrEqualTo(2));
     });
   });

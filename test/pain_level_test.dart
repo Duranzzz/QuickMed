@@ -55,7 +55,7 @@ void main() {
 
     test('PainLevel.severe queda en la sesión para que el médico lo detecte', () async {
       await repository.savePainLevel(testUserId, PainLevel.severe);
-      final sessions = await repository.getAllSessions();
+      final sessions = await repository.getTriageQueue();
       final session = sessions.firstWhere((s) => s.userId == testUserId);
       expect(session.painLevel, PainLevel.severe);
     });
