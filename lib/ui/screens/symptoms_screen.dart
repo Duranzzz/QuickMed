@@ -4,6 +4,7 @@ import '../../data/models/symptom_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/triage_provider.dart';
 import '../widgets/symptom_button.dart';
+import 'pain_screen.dart';
 
 class SymptomsScreen extends StatefulWidget {
   const SymptomsScreen({super.key});
@@ -33,12 +34,8 @@ class _SymptomsScreenState extends State<SymptomsScreen> {
     }
     final saved = await triageProvider.saveSymptoms();
     if (saved && mounted) {
-      // HU 4: aquí navegaremos al medidor de dolor
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ Síntomas guardados. (Próximamente: medidor de dolor)'),
-          backgroundColor: Colors.green,
-        ),
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const PainScreen()),
       );
     }
   }
