@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../data/models/triage_session_model.dart';
 import '../../providers/triage_provider.dart';
 import '../widgets/pain_level_selector.dart';
+import 'doctor_dashboard_screen.dart';
 
 class PainScreen extends StatefulWidget {
   const PainScreen({super.key});
@@ -26,15 +27,8 @@ class _PainScreenState extends State<PainScreen> {
     final saved = await triageProvider.savePainLevel(_selectedLevel!);
 
     if (saved && mounted) {
-      // HU 5: aquí navegaremos al Dashboard del médico
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '✅ Triaje completado. Dolor: ${_levelLabel(_selectedLevel!)}. Un médico te atenderá pronto.',
-          ),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 4),
-        ),
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const DoctorDashboardScreen()),
       );
     }
   }
