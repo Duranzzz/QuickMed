@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/triage_provider.dart';
-import 'ui/screens/login_screen.dart';
+import 'ui/screens/role_selection_screen.dart';
 
 void main() {
   runApp(
@@ -25,7 +25,7 @@ class QuickMedApp extends StatelessWidget {
     return MaterialApp(
       title: 'QuickMed MVP',
       theme: AppTheme.lightTheme,
-      home: const LoginScreen(),
+      home: const RoleSelectionScreen(),
     );
   }
 }
