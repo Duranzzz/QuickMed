@@ -53,4 +53,39 @@ void main() {
       expect(service.demoForcePoor, isFalse);
     });
   });
+
+  group('AgoraService - Monitoreo Remoto (HU 8)', () {
+    late AgoraService service;
+
+    setUp(() {
+      service = AgoraService();
+    });
+
+    test('Calidad remota inicia en excellent', () {
+      expect(service.remoteConnectionQuality, ConnectionQuality.excellent);
+    });
+
+    test('demoForceDegrade también pone la calidad remota en poor', () {
+      service.demoForceDegrade();
+      expect(service.remoteConnectionQuality, ConnectionQuality.poor);
+    });
+
+    test('demoRestoreConnection restaura la calidad remota a excellent', () {
+      service.demoForceDegrade();
+      service.demoRestoreConnection();
+      expect(service.remoteConnectionQuality, ConnectionQuality.excellent);
+    });
+
+    test('Calidad local y remota son independientes por defecto', () {
+      // Ambas inician en excellent
+      expect(service.connectionQuality, ConnectionQuality.excellent);
+      expect(service.remoteConnectionQuality, ConnectionQuality.excellent);
+    });
+
+    test('demoForceDegrade sincroniza local y remota a poor', () {
+      service.demoForceDegrade();
+      expect(service.connectionQuality, ConnectionQuality.poor);
+      expect(service.remoteConnectionQuality, ConnectionQuality.poor);
+    });
+  });
 }
