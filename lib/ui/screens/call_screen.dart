@@ -2,9 +2,12 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import '../../data/services/agora_service.dart';
 import '../widgets/demo_control_panel.dart';
+import '../widgets/signal_indicator.dart';
 
 class CallScreen extends StatefulWidget {
-  const CallScreen({super.key});
+  final bool isDoctor;
+
+  const CallScreen({super.key, this.isDoctor = false});
 
   @override
   State<CallScreen> createState() => _CallScreenState();
@@ -55,11 +58,24 @@ class _CallScreenState extends State<CallScreen> {
                 child: _buildLocalVideo(),
               ),
 
-              // --- Indicador de señal (HU 8 - cimientos) ---
+              // --- Indicador de señal del otro participante (HU 8) ---
               Positioned(
                 top: 48,
                 left: 16,
-                child: _buildSignalIndicator(),
+                child: SignalIndicator(
+                  quality: _agoraService.remoteConnectionQuality,
+                  label: widget.isDoctor ? 'Paciente' : 'Doctor',
+                ),
+              ),
+
+              // --- Indicador de señal propia (referencia) ---
+              Positioned(
+                top: 48,
+                left: 130,
+                child: SignalIndicator(
+                  quality: _agoraService.connectionQuality,
+                  label: 'Tú',
+                ),
               ),
 
               // --- Banner de degradación (HU 7) ---
@@ -152,52 +168,7 @@ class _CallScreenState extends State<CallScreen> {
     );
   }
 
-  // --- Indicador de barras de señal (cimiento HU 8) ---
-  Widget _buildSignalIndicator() {
-    final quality = _agoraService.connectionQuality;
-    final Color color;
-    final IconData icon;
-    final String label;
 
-    switch (quality) {
-      case ConnectionQuality.excellent:
-        color = Colors.green;
-        icon = Icons.signal_cellular_4_bar;
-        label = 'Excelente';
-        break;
-      case ConnectionQuality.good:
-        color = Colors.yellow;
-        icon = Icons.signal_cellular_alt_2_bar;
-        label = 'Buena';
-        break;
-      case ConnectionQuality.poor:
-        color = Colors.red;
-        icon = Icons.signal_cellular_alt_1_bar;
-        label = 'Mala';
-        break;
-      case ConnectionQuality.disconnected:
-        color = Colors.red;
-        icon = Icons.signal_cellular_off;
-        label = 'Sin señal';
-        break;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.black54,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 18),
-          const SizedBox(width: 4),
-          Text(label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
 
   // --- Banner "Modo solo audio" (HU 7) ---
   Widget _buildDegradationBanner() {
