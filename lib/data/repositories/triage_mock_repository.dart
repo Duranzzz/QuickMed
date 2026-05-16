@@ -64,4 +64,16 @@ class TriageMockRepository {
     if (session == null) throw Exception('No hay sesión de triaje activa.');
     session.painLevel = level;
   }
+
+  /// Persiste dolor por síntoma y calcula el nivel general.
+  Future<void> savePainLevels(String userId, Map<String, PainLevel> painPerSymptom) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final session = _sessions[userId];
+    if (session == null) throw Exception('No hay sesión de triaje activa.');
+    session.symptomPainLevels
+      ..clear()
+      ..addAll(painPerSymptom);
+    // El nivel general es el máximo de todos los síntomas
+    session.painLevel = session.overallPainLevel;
+  }
 }

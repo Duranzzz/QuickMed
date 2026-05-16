@@ -57,6 +57,17 @@ class TriageProvider extends ChangeNotifier {
     return true;
   }
 
+  /// Guarda dolor por síntoma y calcula el nivel general (máximo).
+  Future<bool> savePainLevels(Map<String, PainLevel> painPerSymptom) async {
+    if (_session == null) return false;
+    _isLoading = true;
+    notifyListeners();
+    await _repository.savePainLevels(_session!.userId, painPerSymptom);
+    _isLoading = false;
+    notifyListeners();
+    return true;
+  }
+
   // --- Dashboard del médico ---
   List<TriageSession> _triageQueue = [];
   List<TriageSession> get triageQueue => List.unmodifiable(_triageQueue);
