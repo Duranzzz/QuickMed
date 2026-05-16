@@ -26,6 +26,10 @@ class AgoraService extends ChangeNotifier {
   ConnectionQuality _connectionQuality = ConnectionQuality.excellent;
   ConnectionQuality get connectionQuality => _connectionQuality;
 
+  /// Calidad de conexión del usuario remoto (HU 8: el médico ve la señal del paciente).
+  ConnectionQuality _remoteConnectionQuality = ConnectionQuality.excellent;
+  ConnectionQuality get remoteConnectionQuality => _remoteConnectionQuality;
+
   bool _isJoined = false;
   bool get isJoined => _isJoined;
 
@@ -66,12 +70,21 @@ class AgoraService extends ChangeNotifier {
         // Si el demo forzó mala señal, no actualizar con datos reales
         if (_demoForcePoor) return;
 
-        // Mapear la calidad real de Agora a nuestro enum simplificado
-        final quality = _mapQuality(rxQuality);
-        if (quality != _connectionQuality) {
-          _connectionQuality = quality;
-          _handleDegradation();
-          notifyListeners();
+        if (remoteUid == 0) {
+          // Calidad LOCAL (mi propia conexión)
+          final quality = _mapQuality(txQuality);
+          if (quality != _connectionQuality) {
+            _connectionQuality = quality;
+            _handleDegradation();
+            notifyListeners();
+          }
+        } else {
+          // Calidad REMOTA (HU 8: la señal del paciente vista por el médico)
+          final quality = _mapQuality(rxQuality);
+          if (quality != _remoteConnectionQuality) {
+            _remoteConnectionQuality = quality;
+            notifyListeners();
+          }
         }
       },
     ));
@@ -102,6 +115,7 @@ class AgoraService extends ChangeNotifier {
     _isJoined = false;
     _demoForcePoor = false;
     _connectionQuality = ConnectionQuality.excellent;
+    _remoteConnectionQuality = ConnectionQuality.excellent;
     _localVideoEnabled = true;
     _localAudioEnabled = true;
     notifyListeners();
@@ -123,10 +137,11 @@ class AgoraService extends ChangeNotifier {
 
   // ===== DEMO: Degradación forzada (Botón Secreto) =====
 
-  /// Fuerza "mala conexión" para la demo (HU 7).
+  /// Fuerza "mala conexión" para la demo (HU 7 + HU 8).
   void demoForceDegrade() {
     _demoForcePoor = true;
     _connectionQuality = ConnectionQuality.poor;
+    _remoteConnectionQuality = ConnectionQuality.poor;
     _handleDegradation();
     notifyListeners();
   }
@@ -135,6 +150,7 @@ class AgoraService extends ChangeNotifier {
   void demoRestoreConnection() {
     _demoForcePoor = false;
     _connectionQuality = ConnectionQuality.excellent;
+    _remoteConnectionQuality = ConnectionQuality.excellent;
     // Re-habilitar video
     _localVideoEnabled = true;
     _engine?.muteLocalVideoStream(false);
