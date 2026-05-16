@@ -41,7 +41,7 @@ void main() {
       await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 
-      expect(find.text('Número inválido. En Bolivia los números empiezan con 6 o 7'), findsOneWidget);
+      expect(find.text('Debe empezar con 6 o 7'), findsOneWidget);
     });
 
     testWidgets('Acepta número válido boliviano que empieza con 7', (WidgetTester tester) async {
@@ -54,7 +54,7 @@ void main() {
 
       expect(find.text('Por favor, ingresa tu número'), findsNothing);
       expect(find.text('El número debe tener exactamente 8 dígitos'), findsNothing);
-      expect(find.text('Número inválido. En Bolivia los números empiezan con 6 o 7'), findsNothing);
+      expect(find.text('Debe empezar con 6 o 7'), findsNothing);
     });
 
     testWidgets('Acepta número válido boliviano que empieza con 6', (WidgetTester tester) async {
@@ -65,7 +65,7 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.text('Número inválido. En Bolivia los números empiezan con 6 o 7'), findsNothing);
+      expect(find.text('Debe empezar con 6 o 7'), findsNothing);
     });
   });
 }

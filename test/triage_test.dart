@@ -48,8 +48,9 @@ void main() {
       expect(session.selectedSymptoms.first.id, 'stomach');
     });
 
-    test('El catálogo tiene máximo 5 síntomas (criterio HU 3)', () {
-      expect(kAvailableSymptoms.length, lessThanOrEqualTo(5));
+    test('El catálogo tiene los síntomas esperados (incluyendo Otro)', () {
+      expect(kAvailableSymptoms.length, 6);
+      expect(kAvailableSymptoms.last.id, 'other');
     });
 
     test('Cada síntoma tiene label de una sola palabra', () {
