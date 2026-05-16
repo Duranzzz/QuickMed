@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../data/models/triage_session_model.dart';
 import '../../providers/triage_provider.dart';
 import '../widgets/patient_triage_card.dart';
+import 'call_screen.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
@@ -21,7 +22,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   }
 
   int _urgentCount(List<TriageSession> queue) =>
-      queue.where((s) => s.painLevel == PainLevel.severe).length;
+      queue.where((s) => s.painLevel == PainLevel.severe || s.painLevel == PainLevel.verySevere).length;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +37,13 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.video_call),
+            tooltip: 'Entrar a videoconsulta',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CallScreen(isDoctor: true)),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Actualizar cola',

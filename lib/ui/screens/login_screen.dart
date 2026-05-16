@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     return 'El número debe tener exactamente 8 dígitos';
                   }
                   if (!value.startsWith('6') && !value.startsWith('7')) {
-                    return 'Número inválido. En Bolivia los números empiezan con 6 o 7';
+                    return 'El número debe empezar con 6 o 7';
                   }
                   return null;
                 },
