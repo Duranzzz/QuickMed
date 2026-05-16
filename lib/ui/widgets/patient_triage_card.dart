@@ -8,16 +8,20 @@ class PatientTriageCard extends StatelessWidget {
 
   const PatientTriageCard({super.key, required this.session});
 
-  bool get _isUrgent => session.painLevel == PainLevel.severe;
+  bool get _isUrgent => session.painLevel == PainLevel.severe || session.painLevel == PainLevel.verySevere;
 
   Color get _borderColor {
     switch (session.painLevel) {
-      case PainLevel.severe:
+      case PainLevel.verySevere:
         return const Color(0xFFF44336);
+      case PainLevel.severe:
+        return const Color(0xFFFF5722);
       case PainLevel.moderate:
         return const Color(0xFFFFC107);
       case PainLevel.mild:
         return const Color(0xFF4CAF50);
+      case PainLevel.veryMild:
+        return const Color(0xFF81C784);
       default:
         return Colors.grey.shade300;
     }
@@ -25,12 +29,16 @@ class PatientTriageCard extends StatelessWidget {
 
   String get _painLabel {
     switch (session.painLevel) {
+      case PainLevel.verySevere:
+        return 'MUY URGENTE';
       case PainLevel.severe:
         return 'URGENTE';
       case PainLevel.moderate:
         return 'Moderado';
       case PainLevel.mild:
         return 'Leve';
+      case PainLevel.veryMild:
+        return 'Muy Leve';
       default:
         return 'Sin datos';
     }
@@ -38,12 +46,16 @@ class PatientTriageCard extends StatelessWidget {
 
   String get _painEmoji {
     switch (session.painLevel) {
+      case PainLevel.verySevere:
+        return '😭';
       case PainLevel.severe:
         return '😣';
       case PainLevel.moderate:
         return '😐';
       case PainLevel.mild:
         return '😊';
+      case PainLevel.veryMild:
+        return '😌';
       default:
         return '❔';
     }

@@ -20,6 +20,13 @@ class PainLevelOption {
 
 const List<PainLevelOption> kPainOptions = [
   PainLevelOption(
+    level: PainLevel.veryMild,
+    label: 'Muy Leve',
+    emoji: '😌',
+    color: Color(0xFF81C784), // Verde claro
+    description: 'Casi no lo siento',
+  ),
+  PainLevelOption(
     level: PainLevel.mild,
     label: 'Leve',
     emoji: '😊',
@@ -37,6 +44,13 @@ const List<PainLevelOption> kPainOptions = [
     level: PainLevel.severe,
     label: 'Fuerte',
     emoji: '😣',
+    color: Color(0xFFFF5722), // Naranja
+    description: 'Me duele mucho',
+  ),
+  PainLevelOption(
+    level: PainLevel.verySevere,
+    label: 'Muy Fuerte',
+    emoji: '😭',
     color: Color(0xFFF44336), // Rojo
     description: 'No puedo aguantar',
   ),
