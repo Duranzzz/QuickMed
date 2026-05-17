@@ -71,7 +71,7 @@ class _PainScreenState extends State<PainScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dolor: ${_currentSymptom.label} (${_currentSymptomIndex + 1}/$total)'),
+        title: const Text('Nivel de dolor'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
