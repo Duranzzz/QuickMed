@@ -88,9 +88,9 @@ class _CallScreenState extends State<CallScreen> {
                   child: _buildDegradationBanner(),
                 ),
 
-              // --- Controles de llamada (abajo) ---
+              // --- Controles de llamada (abajo, respetando barra de navegación) ---
               Positioned(
-                bottom: 40,
+                bottom: MediaQuery.of(context).padding.bottom + 24,
                 left: 0,
                 right: 0,
                 child: _buildCallControls(),
@@ -98,7 +98,7 @@ class _CallScreenState extends State<CallScreen> {
 
               // --- Botón secreto de demo (esquina inferior izquierda) ---
               Positioned(
-                bottom: 120,
+                bottom: MediaQuery.of(context).padding.bottom + 100,
                 left: 16,
                 child: DemoControlPanel(agoraService: _agoraService),
               ),
