@@ -4,7 +4,7 @@ import '../../data/models/symptom_model.dart';
 import '../../data/models/triage_session_model.dart';
 import '../../providers/triage_provider.dart';
 import '../widgets/pain_level_selector.dart';
-import 'patient_call_setup_screen.dart';
+import 'waiting_room_screen.dart';
 
 class PainScreen extends StatefulWidget {
   const PainScreen({super.key});
@@ -57,9 +57,9 @@ class _PainScreenState extends State<PainScreen> {
     final saved = await triageProvider.savePainLevels(_painPerSymptom);
 
     if (saved && mounted) {
-      // Demo: directo al botón de consulta (HU 6). En producción irá la sala de espera (HU 9).
+      // HU 9: Ir a la sala de espera. Cuando sea el turno, navega automáticamente al botón verde.
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const PatientCallSetupScreen()),
+        MaterialPageRoute(builder: (_) => const WaitingRoomScreen()),
       );
     }
   }
