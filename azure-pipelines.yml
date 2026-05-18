@@ -1,77 +1,17 @@
 trigger:
 - main
 
-pr: none
-
 pool:
-  vmImage: ubuntu-latest
-
-variables:
-  flutter_version: '3.24.0'
+  name: Default
 
 steps:
-# 1. Instalar Flutter
-- task: Bash@3
-  displayName: 'Instalar Flutter'
-  inputs:
-    targetType: 'inline'
-    script: |
-      git clone --depth 1 --branch $(flutter_version) https://github.com/flutter/flutter.git
-      export PATH="$PATH:$(Agent.BuildDirectory)/flutter/bin"
-      echo "##vso[task.setvariable variable=FLUTTER_ROOT]$(Agent.BuildDirectory)/flutter"
-      echo "##vso[task.setvariable variable=PATH]$PATH:$(Agent.BuildDirectory)/flutter/bin"
-      flutter doctor -v
+- script: flutter pub get
+  displayName: 'Pub Get'
 
-# 2. Configurar Android SDK
-- task: Bash@3
-  displayName: 'Configurar Android SDK'
-  inputs:
-    targetType: 'inline'
-    script: |
-      sudo apt-get update
-      sudo apt-get install -y android-sdk
-      export ANDROID_HOME=/usr/lib/android-sdk
-      export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
-      echo "##vso[task.setvariable variable=ANDROID_HOME]$ANDROID_HOME"
-      echo "##vso[task.setvariable variable=PATH]$PATH"
-
-# 3. Aceptar licencias Android
-- task: Bash@3
-  displayName: 'Aceptar licencias Android'
-  inputs:
-    targetType: 'inline'
-    script: |
-      yes | flutter doctor --android-licenses || true
-
-# 4. Descargar dependencias del proyecto
-- task: Bash@3
-  displayName: 'Flutter pub get'
-  inputs:
-    targetType: 'inline'
-    script: |
-      flutter pub get
-
-# 5. Build APK Release
-- task: Bash@3
+- script: flutter build apk --release
   displayName: 'Build APK'
-  inputs:
-    targetType: 'inline'
-    script: |
-      flutter build apk --release
 
-# 6. Publicar APK como artefacto
 - task: PublishBuildArtifacts@1
-  displayName: 'Publicar APK'
   inputs:
     PathtoPublish: 'build/app/outputs/flutter-apk/app-release.apk'
     ArtifactName: 'apk-release'
-    publishLocation: 'Container'
-
-# 7. Confirmación
-- task: Bash@3
-  displayName: 'Resumen'
-  inputs:
-    targetType: 'inline'
-    script: |
-      echo "✅ APK compilado exitosamente"
-      ls -lh build/app/outputs/flutter-apk/
