@@ -5,8 +5,9 @@ import '../../data/models/triage_session_model.dart';
 /// Muestra borde rojo y badge de urgencia si el dolor es "Fuerte".
 class PatientTriageCard extends StatelessWidget {
   final TriageSession session;
+  final VoidCallback? onAdmit;
 
-  const PatientTriageCard({super.key, required this.session});
+  const PatientTriageCard({super.key, required this.session, this.onAdmit});
 
   bool get _isUrgent => session.painLevel == PainLevel.severe || session.painLevel == PainLevel.verySevere;
 
@@ -165,6 +166,29 @@ class PatientTriageCard extends StatelessWidget {
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   );
                 }).toList(),
+              ),
+            ],
+
+            // HU 10: Botón "Atender"
+            if (onAdmit != null) ...[
+              const SizedBox(height: 12),
+              const Divider(height: 1),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: onAdmit,
+                  icon: const Icon(Icons.video_call, size: 20),
+                  label: const Text('Atender'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4CAF50),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
             ],
           ],
