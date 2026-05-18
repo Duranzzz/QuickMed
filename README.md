@@ -18,29 +18,37 @@ Sabemos que explicar un malestar puede ser difícil. Por eso, usamos un sistema 
 - ¿Dolor en los huesos? 🦴
 
 ### 🚦 Semáforo de Dolor
-Indícanos qué tan fuerte es tu malestar con nuestro medidor visual:
+Indícanos qué tan fuerte es tu malestar con nuestro medidor visual de 5 niveles:
+- **Verde Claro (Muy Leve):** "Casi no lo siento".
 - **Verde (Leve):** "Me molesta un poco".
 - **Amarillo (Moderado):** "Duele bastante".
-- **Rojo (Fuerte):** "No puedo aguantar".
+- **Naranja (Fuerte):** "Me duele mucho".
+- **Rojo (Muy Fuerte):** "No puedo aguantar".
 
-### 📋 Panel para Médicos
-Los doctores cuentan con un panel donde ven a todos los pacientes en espera, ordenados automáticamente para que los casos más urgentes reciban atención de inmediato.
+### 📋 Panel para Médicos y Videoconsulta
+Los doctores cuentan con un panel donde ven a todos los pacientes en espera, ordenados automáticamente para dar prioridad a los casos urgentes. Desde allí, el médico puede admitir al paciente e iniciar una **videollamada en tiempo real**.
 
 ---
 
 ## 🚀 Estado del Proyecto
 
-Actualmente hemos completado la **Fase 1 (MVP)**, que incluye:
-- [x] Registro y validación para números bolivianos.
-- [x] Sistema de seguridad OTP (Código de un solo uso).
-- [x] Selección de síntomas mediante iconografía.
-- [x] Medidor gráfico de nivel de dolor.
-- [x] Panel de control para el personal médico.
+### Fase 1 (Sprint 1) - Completada ✅
+- [x] Autenticación simplificada con número boliviano y OTP.
+- [x] Catálogo visual de síntomas.
+- [x] Escala de dolor básica.
+- [x] Panel de control básico para médicos.
+
+### Fase 2 (Sprint 2) - Completada ✅
+- [x] **Videoconsultas en tiempo real** integradas con Agora RTC.
+- [x] **Monitoreo inteligente de conexión**: degradación automática a modo "solo audio" si la señal es débil.
+- [x] **Sala de espera virtual** con actualización automática de turnos.
+- [x] **Gestión médica avanzada**: Admisión directa de pacientes desde el panel hacia la videollamada.
+- [x] **Triaje preciso**: Ampliación a 5 niveles de dolor, evaluados síntoma por síntoma, e inclusión de la opción "Otro".
 
 ---
 
 ## 🇧🇴 Hecho para Bolivia
-QuickMed está adaptado a la realidad de nuestro país, optimizado para funcionar en dispositivos móviles y diseñado para ser inclusivo y fácil de usar por todos.
+QuickMed está adaptado a la realidad de nuestro país, optimizado para funcionar en conexiones de red fluctuantes gracias a su adaptación dinámica de calidad, y diseñado para ser inclusivo y fácil de usar por todos.
 
 ---
 *QuickMed es un proyecto en desarrollo constante para mejorar la salud de nuestra comunidad.*
