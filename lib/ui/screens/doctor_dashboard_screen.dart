@@ -24,6 +24,18 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   int _urgentCount(List<TriageSession> queue) =>
       queue.where((s) => s.painLevel == PainLevel.severe || s.painLevel == PainLevel.verySevere).length;
 
+  /// HU 10: Admitir al paciente y navegar a la videollamada.
+  Future<void> _admitAndCall(String userId) async {
+    final triageProvider = context.read<TriageProvider>();
+    final admitted = await triageProvider.admitPatient(userId);
+
+    if (admitted != null && mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const CallScreen(isDoctor: true)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final triageProvider = context.watch<TriageProvider>();
@@ -37,13 +49,6 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.video_call),
-            tooltip: 'Entrar a videoconsulta',
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CallScreen(isDoctor: true)),
-            ),
-          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Actualizar cola',
@@ -126,8 +131,13 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                       Expanded(
                         child: ListView.builder(
                           itemCount: queue.length,
-                          itemBuilder: (context, index) =>
-                              PatientTriageCard(session: queue[index]),
+                          itemBuilder: (context, index) {
+                            final session = queue[index];
+                            return PatientTriageCard(
+                              session: session,
+                              onAdmit: () => _admitAndCall(session.userId),
+                            );
+                          },
                         ),
                       ),
                     ],
