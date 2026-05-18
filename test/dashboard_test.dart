@@ -72,4 +72,42 @@ void main() {
       }
     });
   });
+
+  group('Dashboard Médico - Admisión de pacientes (HU 10)', () {
+    late TriageMockRepository repository;
+
+    setUp(() {
+      repository = TriageMockRepository();
+    });
+
+    test('admitPatient retorna la sesión del paciente admitido', () async {
+      final admitted = await repository.admitPatient('paciente-001');
+      expect(admitted, isNotNull);
+      expect(admitted!.userId, 'paciente-001');
+    });
+
+    test('El paciente admitido desaparece de la cola', () async {
+      final queueBefore = await repository.getTriageQueue();
+      final countBefore = queueBefore.length;
+
+      await repository.admitPatient('paciente-001');
+      final queueAfter = await repository.getTriageQueue();
+
+      expect(queueAfter.length, countBefore - 1);
+      expect(queueAfter.any((s) => s.userId == 'paciente-001'), isFalse);
+    });
+
+    test('admitPatient de un paciente inexistente retorna null', () async {
+      final admitted = await repository.admitPatient('fantasma-999');
+      expect(admitted, isNull);
+    });
+
+    test('La cola se reordena correctamente tras admitir al urgente', () async {
+      await repository.admitPatient('paciente-001'); // El urgente (severe)
+      final queue = await repository.getTriageQueue();
+
+      // Ahora el primero debería ser moderate (paciente-002)
+      expect(queue.first.painLevel, PainLevel.moderate);
+    });
+  });
 }
