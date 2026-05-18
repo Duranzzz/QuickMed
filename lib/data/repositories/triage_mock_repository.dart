@@ -76,4 +76,12 @@ class TriageMockRepository {
     // El nivel general es el máximo de todos los síntomas
     session.painLevel = session.overallPainLevel;
   }
+
+  /// HU 10: Admite al paciente (lo saca de la cola de espera).
+  /// Retorna la sesión admitida para que el médico tenga contexto.
+  Future<TriageSession?> admitPatient(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final session = _sessions.remove(userId);
+    return session;
+  }
 }

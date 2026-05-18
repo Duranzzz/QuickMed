@@ -79,4 +79,16 @@ class TriageProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  /// HU 10: Admite al paciente, lo saca de la cola y refresca la lista.
+  Future<TriageSession?> admitPatient(String userId) async {
+    _isLoading = true;
+    notifyListeners();
+    final admitted = await _repository.admitPatient(userId);
+    // Refrescar la cola sin el paciente admitido
+    _triageQueue = await _repository.getTriageQueue();
+    _isLoading = false;
+    notifyListeners();
+    return admitted;
+  }
 }
