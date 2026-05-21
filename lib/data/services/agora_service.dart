@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/foundation.dart';
 
@@ -37,6 +38,9 @@ class AgoraService extends ChangeNotifier {
   bool _demoForcePoor = false;
   bool get demoForcePoor => _demoForcePoor;
 
+  /// ID del data stream para enviar mensajes de demo entre dispositivos.
+  int? _dataStreamId;
+
   /// Inicializa el RtcEngine de Agora.
   Future<void> initialize() async {
     _engine = createAgoraRtcEngine();
@@ -51,9 +55,15 @@ class AgoraService extends ChangeNotifier {
 
     // Registrar callbacks
     _engine!.registerEventHandler(RtcEngineEventHandler(
-      onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+      onJoinChannelSuccess: (RtcConnection connection, int elapsed) async {
         debugPrint('[Agora] Unido al canal: ${connection.channelId}');
         _isJoined = true;
+
+        // Crear data stream para sincronizar demo entre dispositivos
+        _dataStreamId = await _engine!.createDataStream(
+          DataStreamConfig(syncWithAudio: false, ordered: true),
+        );
+        debugPrint('[Agora] DataStream creado: $_dataStreamId');
         notifyListeners();
       },
       onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
@@ -87,6 +97,10 @@ class AgoraService extends ChangeNotifier {
           }
         }
       },
+      // Recibir mensajes de demo del otro dispositivo
+      onStreamMessage: (RtcConnection connection, int remoteUid, int streamId, Uint8List data, int length, int sentTs) {
+        _handleRemoteDemoMessage(data);
+      },
     ));
   }
 
@@ -114,6 +128,7 @@ class AgoraService extends ChangeNotifier {
     _remoteUid = null;
     _isJoined = false;
     _demoForcePoor = false;
+    _dataStreamId = null;
     _connectionQuality = ConnectionQuality.excellent;
     _remoteConnectionQuality = ConnectionQuality.excellent;
     _localVideoEnabled = true;
@@ -138,15 +153,19 @@ class AgoraService extends ChangeNotifier {
   // ===== DEMO: Degradación forzada (Botón Secreto) =====
 
   /// Fuerza "mala conexión" para la demo (HU 7 + HU 8).
+  /// Notifica al otro dispositivo vía data stream.
   void demoForceDegrade() {
     _demoForcePoor = true;
     _connectionQuality = ConnectionQuality.poor;
-    _remoteConnectionQuality = ConnectionQuality.poor;
     _handleDegradation();
     notifyListeners();
+
+    // Notificar al otro dispositivo
+    _sendDemoMessage('demo_degrade');
   }
 
   /// Restaura la conexión en la demo.
+  /// Notifica al otro dispositivo vía data stream.
   void demoRestoreConnection() {
     _demoForcePoor = false;
     _connectionQuality = ConnectionQuality.excellent;
@@ -155,6 +174,41 @@ class AgoraService extends ChangeNotifier {
     _localVideoEnabled = true;
     _engine?.muteLocalVideoStream(false);
     notifyListeners();
+
+    // Notificar al otro dispositivo
+    _sendDemoMessage('demo_restore');
+  }
+
+  // ===== Data Stream: Sincronización de demo entre dispositivos =====
+
+  /// Envía un mensaje de demo al otro dispositivo por el data stream.
+  void _sendDemoMessage(String type) {
+    if (_engine == null || _dataStreamId == null) return;
+    final json = jsonEncode({'type': type});
+    final data = Uint8List.fromList(utf8.encode(json));
+    _engine!.sendStreamMessage(streamId: _dataStreamId!, data: data, length: data.length);
+    debugPrint('[Agora] Mensaje demo enviado: $type');
+  }
+
+  /// Procesa un mensaje de demo recibido del otro dispositivo.
+  void _handleRemoteDemoMessage(Uint8List data) {
+    try {
+      final json = jsonDecode(utf8.decode(data)) as Map<String, dynamic>;
+      final type = json['type'] as String?;
+      debugPrint('[Agora] Mensaje demo recibido: $type');
+
+      if (type == 'demo_degrade') {
+        // El otro dispositivo forzó caída → actualizo su indicador de señal
+        _remoteConnectionQuality = ConnectionQuality.poor;
+        notifyListeners();
+      } else if (type == 'demo_restore') {
+        // El otro dispositivo restauró → actualizo su indicador
+        _remoteConnectionQuality = ConnectionQuality.excellent;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('[Agora] Error al procesar mensaje demo: $e');
+    }
   }
 
   // ===== Privados =====
