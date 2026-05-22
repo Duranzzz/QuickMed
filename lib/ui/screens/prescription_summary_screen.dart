@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../data/models/prescription_model.dart';
+import 'doctor_dashboard_screen.dart';
 
-/// Pantalla resumen de la receta emitida.
-/// En HU 12 se le agrega el QR visual.
+/// Pantalla resumen de la receta emitida con QR real (HU 12).
 class PrescriptionSummaryScreen extends StatelessWidget {
   final Prescription prescription;
 
@@ -38,25 +39,55 @@ class PrescriptionSummaryScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Placeholder para QR (HU 12)
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: const Center(
+              // QR real (HU 12)
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.qr_code_2, size: 80, color: Colors.grey),
-                      SizedBox(height: 8),
-                      Text('QR se generará en HU 12',
-                          style: TextStyle(color: Colors.grey)),
+                      QrImageView(
+                        data: prescription.qrUrl,
+                        version: QrVersions.auto,
+                        size: 200,
+                        backgroundColor: Colors.white,
+                        eyeStyle: const QrEyeStyle(
+                          eyeShape: QrEyeShape.square,
+                          color: Color(0xFF1976D2),
+                        ),
+                        dataModuleStyle: const QrDataModuleStyle(
+                          dataModuleShape: QrDataModuleShape.square,
+                          color: Color(0xFF212121),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Código: ${prescription.qrHash}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'El farmacéutico escaneará este QR\npara verificar la receta',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
               ),
               const SizedBox(height: 24),
 
@@ -80,11 +111,12 @@ class PrescriptionSummaryScreen extends StatelessWidget {
                   )),
               const SizedBox(height: 24),
 
-              // Botón volver al panel
+              // Botón volver al panel médico
               ElevatedButton.icon(
                 onPressed: () {
-                  // Volver al dashboard del doctor
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const DoctorDashboardScreen()),
+                  );
                 },
                 icon: const Icon(Icons.home),
                 label: const Text('Volver al Panel'),
