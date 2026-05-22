@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/services/agora_service.dart';
 import '../widgets/demo_control_panel.dart';
 import '../widgets/signal_indicator.dart';
+import 'prescription_screen.dart';
 
 class CallScreen extends StatefulWidget {
   final bool isDoctor;
@@ -30,7 +31,18 @@ class _CallScreenState extends State<CallScreen> {
 
   Future<void> _endCall() async {
     await _agoraService.leaveChannel();
-    if (mounted) Navigator.of(context).pop();
+    if (!mounted) return;
+
+    if (widget.isDoctor) {
+      // HU 11: Al finalizar la llamada como doctor → formulario de receta
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const PrescriptionScreen(patientId: 'paciente-demo'),
+        ),
+      );
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
