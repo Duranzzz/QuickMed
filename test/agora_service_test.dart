@@ -65,9 +65,10 @@ void main() {
       expect(service.remoteConnectionQuality, ConnectionQuality.excellent);
     });
 
-    test('demoForceDegrade también pone la calidad remota en poor', () {
+    test('demoForceDegrade NO cambia la calidad remota localmente (se envía al otro dispositivo)', () {
       service.demoForceDegrade();
-      expect(service.remoteConnectionQuality, ConnectionQuality.poor);
+      // La calidad remota local no cambia: el mensaje va al otro dispositivo vía data stream
+      expect(service.remoteConnectionQuality, ConnectionQuality.excellent);
     });
 
     test('demoRestoreConnection restaura la calidad remota a excellent', () {
@@ -82,10 +83,11 @@ void main() {
       expect(service.remoteConnectionQuality, ConnectionQuality.excellent);
     });
 
-    test('demoForceDegrade sincroniza local y remota a poor', () {
+    test('demoForceDegrade cambia solo la calidad local, no la remota', () {
       service.demoForceDegrade();
       expect(service.connectionQuality, ConnectionQuality.poor);
-      expect(service.remoteConnectionQuality, ConnectionQuality.poor);
+      // La remota se mantiene: el otro dispositivo recibe el mensaje por stream
+      expect(service.remoteConnectionQuality, ConnectionQuality.excellent);
     });
   });
 }
