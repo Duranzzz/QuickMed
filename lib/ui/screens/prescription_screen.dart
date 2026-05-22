@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import '../../data/models/prescription_model.dart';
 import '../../data/repositories/prescription_mock_repository.dart';
 import 'prescription_summary_screen.dart';
@@ -36,9 +37,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
 
     setState(() => _isSaving = true);
 
-    // Generar hash único (simple para demo, en producción sería UUID v4)
-    final hash = DateTime.now().millisecondsSinceEpoch.toRadixString(36) +
-        widget.patientId.hashCode.toRadixString(36);
+    // Generar UUID v4 único para el hash QR (HU 12)
+    final hash = const Uuid().v4();
 
     final prescription = Prescription(
       id: 'rx-$hash',
