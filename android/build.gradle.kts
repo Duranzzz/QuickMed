@@ -17,6 +17,32 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+    project.plugins.withId("com.android.library") {
+        project.extensions.configure<com.android.build.gradle.LibraryExtension> {
+            if (namespace.isNullOrEmpty()) {
+                val manifest = file("${project.projectDir}/src/main/AndroidManifest.xml")
+                if (manifest.exists()) {
+                    val pkg = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+                        .newDocumentBuilder()
+                        .parse(manifest)
+                        .documentElement
+                        .getAttribute("package")
+                    if (pkg.isNotEmpty()) {
+                        namespace = pkg
+                    }
+                }
+            }
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+        }
+        project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            compilerOptions {
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+            }
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
