@@ -1,3 +1,10 @@
+resources:
+  repositories:
+    - repository: self
+      type: github
+      endpoint: MiConexionGitHub
+      name: tu-usuario/tu-repo-flutter
+
 trigger:
 - main
 
@@ -13,5 +20,6 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: 'build/app/outputs/flutter-apk/app-release.apk'
+    PathtoPublish: 'build/app/outputs/flutter-apk/release/app-release.apk'
     ArtifactName: 'apk-release'
+    publishLocation: 'Container'
