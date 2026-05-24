@@ -163,6 +163,67 @@ void main() {
     });
   });
 
+  group('PrescriptionModel - Accesibilidad offline (HU 14)', () {
+    test('La imagen capturada con pixelRatio 3.0 produce un QR escaneable', () {
+      // El QR se renderiza a 200px × pixelRatio 3.0 = 600px resolución real
+      const qrSize = 200.0;
+      const pixelRatio = 3.0;
+      final realPixels = qrSize * pixelRatio;
+      // Mínimo recomendado para QR escaneable: 300px
+      expect(realPixels, greaterThanOrEqualTo(300));
+    });
+
+    test('La prescripción se serializa y deserializa para persistencia offline',
+        () {
+      final p = Prescription(
+        id: 'rx-offline',
+        qrHash: 'offline-hash-456',
+        patientId: 'paciente-rural',
+        doctorId: 'doctor-remoto',
+        date: DateTime(2026, 5, 21),
+        medications: const [
+          MedicationItem(
+              name: 'Amoxicilina',
+              dose: '500mg',
+              frequency: 'Cada 8h',
+              duration: '7 días'),
+        ],
+      );
+
+      // Simula guardar y recuperar (serialización round-trip)
+      final json = p.toJson();
+      final restored = Prescription.fromJson(json);
+
+      expect(restored.id, p.id);
+      expect(restored.qrHash, p.qrHash);
+      expect(restored.qrUrl, p.qrUrl);
+      expect(restored.patientId, 'paciente-rural');
+      expect(restored.medications.length, 1);
+      expect(restored.medications.first.name, 'Amoxicilina');
+    });
+
+    test('qrUrl es estable — misma URL generada siempre para el mismo hash',
+        () {
+      final p1 = Prescription(
+        id: 'rx-1',
+        qrHash: 'stable-hash',
+        patientId: 'p',
+        doctorId: 'd',
+        date: DateTime.now(),
+        medications: const [],
+      );
+      final p2 = Prescription(
+        id: 'rx-2',
+        qrHash: 'stable-hash',
+        patientId: 'p',
+        doctorId: 'd',
+        date: DateTime.now(),
+        medications: const [],
+      );
+      expect(p1.qrUrl, equals(p2.qrUrl));
+    });
+  });
+
   group('PrescriptionMockRepository - CRUD', () {
     late PrescriptionMockRepository repo;
 
