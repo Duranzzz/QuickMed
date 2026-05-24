@@ -74,6 +74,95 @@ void main() {
     });
   });
 
+  group('PrescriptionModel - Distribución (HU 13)', () {
+    test('qrUrl se incluye como enlace verificable en el texto de distribución',
+        () {
+      final p = Prescription(
+        id: 'rx-share',
+        qrHash: 'share-hash-123',
+        patientId: 'Juan Pérez',
+        doctorId: 'Dr. García',
+        date: DateTime(2026, 5, 21),
+        medications: const [
+          MedicationItem(
+              name: 'Amoxicilina',
+              dose: '500mg',
+              frequency: 'Cada 8h',
+              duration: '7 días'),
+          MedicationItem(
+              name: 'Ibuprofeno',
+              dose: '400mg',
+              frequency: 'Cada 6h',
+              duration: '5 días'),
+        ],
+      );
+
+      // Simula el texto que genera _shareText() en la pantalla
+      final shareText = 'Receta Médica — QuickMed\n'
+          'Paciente: ${p.patientId}\n'
+          'Fecha: ${p.date.day}/${p.date.month}/${p.date.year}\n\n'
+          'Medicamentos:\n'
+          '${p.medications.map((m) => '• ${m.name} — ${m.dose}, ${m.frequency}, ${m.duration}').join('\n')}\n\n'
+          'Verificar receta: ${p.qrUrl}';
+
+      expect(shareText, contains('Juan Pérez'));
+      expect(shareText, contains('21/5/2026'));
+      expect(shareText, contains('Amoxicilina'));
+      expect(shareText, contains('Ibuprofeno'));
+      expect(shareText, contains('https://quickmed.demo/rx/share-hash-123'));
+    });
+
+    test('El texto de distribución incluye todos los medicamentos', () {
+      final p = Prescription(
+        id: 'rx-multi',
+        qrHash: 'multi-123',
+        patientId: 'María López',
+        doctorId: 'Dr. Sánchez',
+        date: DateTime(2026, 6, 15),
+        medications: const [
+          MedicationItem(
+              name: 'Paracetamol',
+              dose: '1g',
+              frequency: 'Cada 8h',
+              duration: '3 días'),
+          MedicationItem(
+              name: 'Omeprazol',
+              dose: '20mg',
+              frequency: 'Cada 24h',
+              duration: '14 días'),
+          MedicationItem(
+              name: 'Loratadina',
+              dose: '10mg',
+              frequency: 'Cada 24h',
+              duration: '7 días'),
+        ],
+      );
+
+      final meds = p.medications
+          .map((m) =>
+              '• ${m.name} — ${m.dose}, ${m.frequency}, ${m.duration}')
+          .join('\n');
+
+      expect(meds, contains('Paracetamol'));
+      expect(meds, contains('Omeprazol'));
+      expect(meds, contains('Loratadina'));
+      expect(meds.split('\n').length, 3);
+    });
+
+    test('qrUrl usa el hash correcto para distribución', () {
+      final p = Prescription(
+        id: 'rx-dist',
+        qrHash: 'abc-def-ghi',
+        patientId: 'p1',
+        doctorId: 'd1',
+        date: DateTime.now(),
+        medications: const [],
+      );
+      expect(p.qrUrl, contains('abc-def-ghi'));
+      expect(p.qrUrl, startsWith('https://'));
+    });
+  });
+
   group('PrescriptionMockRepository - CRUD', () {
     late PrescriptionMockRepository repo;
 
