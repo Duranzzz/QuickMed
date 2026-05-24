@@ -41,6 +41,7 @@ dependencies:
   qr_flutter: ^4.1.0
   share_plus: ^4.5.3
   path_provider: ^2.0.15
+  gal: ^2.3.2
 
 dev_dependencies:
   flutter_test:
