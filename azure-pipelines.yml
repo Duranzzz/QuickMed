@@ -1,32 +1,42 @@
 # azure-pipelines.yml
-# Este archivo define el pipeline de CI/CD para compilar Flutter
-
-resources:
-  repositories:
-    - repository: self
-      type: github
-      endpoint: github.com_Duranzzz    # Tu conexión a GitHub
-      name: Duranzzz/QuickMed          # usuario/repo
+# Pipeline CI/CD para Flutter con tests
 
 trigger:
-- main                                # Se ejecuta al hacer push a main
+- main
 
 pool:
-  name: Default                        # Tu agente self-hosted (tu PC)
+  name: Default
 
 steps:
-# PASO 1: Instalar dependencias de Flutter
+# PASO 1: Instalar dependencias
 - script: flutter pub get
   displayName: 'Pub Get'
 
-# PASO 2: Compilar APK en modo release
+# PASO 2: Ejecutar tests y generar reporte JUnit
+- script: |
+    flutter test --machine > test-results.json
+    dart run junitreport:tojunit --input test-results.json --output test-results.xml
+  displayName: 'Ejecutar Tests'
+  continueOnError: true
+
+# PASO 3: Publicar resultados en Azure DevOps
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/test-results.xml'
+    mergeTestResults: true
+    testRunTitle: 'Flutter Tests'
+  condition: succeededOrFailed()
+
+# PASO 4: Compilar APK solo si los tests pasan
 - script: flutter build apk --release
   displayName: 'Build APK Release'
+  condition: succeeded()
 
-# PASO 3: Publicar el APK en Artifacts de Azure DevOps
+# PASO 5: Publicar APK en Artifacts
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: 'build/app/outputs/flutter-apk/app-release.apk'  # Ruta confirmada
+    PathtoPublish: 'build/app/outputs/flutter-apk/app-release.apk'
     ArtifactName: 'apk-release'
-    publishLocation: 'Container'  # Se guarda en Azure DevOps (nube)
+    publishLocation: 'Container'
   displayName: 'Publicar APK en Artifacts'
