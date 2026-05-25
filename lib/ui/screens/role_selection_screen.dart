@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'doctor_dashboard_screen.dart';
+import 'pharmacy_scanner_screen.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -57,19 +58,15 @@ class RoleSelectionScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // --- Botón Farmacéutico ---
+              // --- Botón Farmacéutico (HU 15) ---
               _RoleCard(
                 icon: Icons.local_pharmacy,
                 label: 'Farmacéutico',
-                subtitle: 'Próximamente',
-                color: const Color(0xFF9E9E9E),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('El módulo de Farmacia estará disponible próximamente.'),
-                    ),
-                  );
-                },
+                subtitle: 'Verificar recetas',
+                color: const Color(0xFFFF9800),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const PharmacyScannerScreen()),
+                ),
               ),
             ],
           ),
