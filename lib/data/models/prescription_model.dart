@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 /// Estado de una receta médica.
@@ -57,6 +58,20 @@ class Prescription {
 
   /// URL simulada que contiene el QR (para la demo).
   String get qrUrl => 'https://quickmed.demo/rx/$qrHash';
+
+  /// Codifica la receta completa como JSON para incrustar en el QR.
+  /// Permite que un tercer dispositivo (farmacia) lea los datos sin servidor.
+  String toQrData() => jsonEncode(toJson());
+
+  /// Decodifica una receta desde los datos crudos de un QR escaneado.
+  static Prescription? fromQrData(String rawData) {
+    try {
+      final json = jsonDecode(rawData) as Map<String, dynamic>;
+      return Prescription.fromJson(json);
+    } catch (_) {
+      return null;
+    }
+  }
 
   Prescription copyWith({PrescriptionStatus? status}) {
     return Prescription(
