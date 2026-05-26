@@ -5,15 +5,28 @@ pool:
   name: Default
 
 steps:
+# PASO 1: Dependencias
 - script: flutter pub get
   displayName: 'Pub Get'
 
+# PASO 2: Tests con debug completo
 - script: |
+    echo "=== Directorio actual ==="
+    cd
+    echo "=== Ejecutando flutter test ==="
     flutter test --machine > test-results.json
+    echo "=== Verificar JSON ==="
+    type test-results.json | head -n 5
+    echo "=== Instalando junitreport si no existe ==="
+    flutter pub add --dev junitreport
+    echo "=== Convirtiendo a JUnit ==="
     flutter pub run junitreport:tojunit --input test-results.json --output test-results.xml
-  displayName: 'Ejecutar Tests'
-  continueOnError: true
+    echo "=== Verificar XML ==="
+    dir test-results.xml
+    type test-results.xml | head -n 10
+  displayName: 'Ejecutar Tests + Debug'
 
+# PASO 3: Publicar resultados
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
@@ -23,9 +36,11 @@ steps:
     testRunTitle: 'Flutter Tests'
   condition: succeededOrFailed()
 
+# PASO 4: Build APK
 - script: flutter build apk --release
-  displayName: 'Build APK Release'
+  displayName: 'Build APK'
 
+# PASO 5: Publicar APK
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: 'build/app/outputs/flutter-apk/app-release.apk'
