@@ -224,6 +224,87 @@ void main() {
     });
   });
 
+  group('PrescriptionModel - Verificación farmacia (HU 15)', () {
+    test('toQrData() y fromQrData() hacen round-trip correcto', () {
+      final original = Prescription(
+        id: 'rx-farm',
+        qrHash: 'farmacia-hash',
+        patientId: 'Juan Pérez',
+        doctorId: 'Dr. García',
+        date: DateTime(2026, 5, 23),
+        medications: const [
+          MedicationItem(
+              name: 'Amoxicilina',
+              dose: '500mg',
+              frequency: 'Cada 8h',
+              duration: '7 días'),
+          MedicationItem(
+              name: 'Ibuprofeno',
+              dose: '400mg',
+              frequency: 'Cada 6h',
+              duration: '5 días'),
+        ],
+      );
+
+      final qrData = original.toQrData();
+      final scanned = Prescription.fromQrData(qrData);
+
+      expect(scanned, isNotNull);
+      expect(scanned!.id, 'rx-farm');
+      expect(scanned.qrHash, 'farmacia-hash');
+      expect(scanned.patientId, 'Juan Pérez');
+      expect(scanned.doctorId, 'Dr. García');
+      expect(scanned.medications.length, 2);
+      expect(scanned.medications[0].name, 'Amoxicilina');
+      expect(scanned.medications[1].name, 'Ibuprofeno');
+      expect(scanned.status, PrescriptionStatus.active);
+    });
+
+    test('fromQrData() retorna null con datos inválidos', () {
+      expect(Prescription.fromQrData('basura'), isNull);
+      expect(Prescription.fromQrData(''), isNull);
+      expect(Prescription.fromQrData('https://google.com'), isNull);
+    });
+
+    test('Los tres estados se mapean correctamente tras escaneo', () {
+      for (final status in PrescriptionStatus.values) {
+        final p = Prescription(
+          id: 'rx-status',
+          qrHash: 'hash',
+          patientId: 'p',
+          doctorId: 'd',
+          date: DateTime.now(),
+          medications: const [],
+          status: status,
+        );
+        final scanned = Prescription.fromQrData(p.toQrData());
+        expect(scanned!.status, status);
+      }
+    });
+
+    test('fromQrData() preserva todos los medicamentos con dosis', () {
+      final p = Prescription(
+        id: 'rx-meds',
+        qrHash: 'meds-hash',
+        patientId: 'Paciente',
+        doctorId: 'Doctor',
+        date: DateTime(2026, 1, 1),
+        medications: const [
+          MedicationItem(
+              name: 'Med1', dose: '10mg', frequency: '1x', duration: '3d'),
+          MedicationItem(
+              name: 'Med2', dose: '20mg', frequency: '2x', duration: '5d'),
+          MedicationItem(
+              name: 'Med3', dose: '30mg', frequency: '3x', duration: '7d'),
+        ],
+      );
+
+      final scanned = Prescription.fromQrData(p.toQrData());
+      expect(scanned!.medications.length, 3);
+      expect(scanned.medications[2].dose, '30mg');
+    });
+  });
+
   group('PrescriptionMockRepository - CRUD', () {
     late PrescriptionMockRepository repo;
 
