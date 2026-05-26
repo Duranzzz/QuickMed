@@ -276,7 +276,7 @@ class _PrescriptionSummaryScreenState extends State<PrescriptionSummaryScreen> {
                         child: Column(
                           children: [
                             QrImageView(
-                              data: rx.qrUrl,
+                              data: rx.toQrData(),
                               version: QrVersions.auto,
                               size: 200,
                               backgroundColor: Colors.white,
