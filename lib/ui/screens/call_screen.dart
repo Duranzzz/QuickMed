@@ -3,12 +3,18 @@ import 'package:flutter/material.dart';
 import '../../data/services/agora_service.dart';
 import '../widgets/demo_control_panel.dart';
 import '../widgets/signal_indicator.dart';
+import 'patient_home_screen.dart';
 import 'prescription_screen.dart';
 
 class CallScreen extends StatefulWidget {
   final bool isDoctor;
+  final String patientId;
 
-  const CallScreen({super.key, this.isDoctor = false});
+  const CallScreen({
+    super.key,
+    this.isDoctor = false,
+    this.patientId = 'paciente-demo',
+  });
 
   @override
   State<CallScreen> createState() => _CallScreenState();
@@ -37,11 +43,15 @@ class _CallScreenState extends State<CallScreen> {
       // HU 11: Al finalizar la llamada como doctor → formulario de receta
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => const PrescriptionScreen(patientId: 'paciente-demo'),
+          builder: (_) => PrescriptionScreen(patientId: widget.patientId),
         ),
       );
     } else {
-      Navigator.of(context).pop();
+      // Paciente: limpiar historial de triaje y volver al lobby
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const PatientHomeScreen()),
+        (route) => false,
+      );
     }
   }
 

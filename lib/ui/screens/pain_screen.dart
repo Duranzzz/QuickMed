@@ -74,60 +74,56 @@ class _PainScreenState extends State<PainScreen> {
         title: const Text('Nivel de dolor'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Ícono del síntoma actual
-            Icon(
-              _currentSymptom.icon,
-              size: 60,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '¿Cuánto te duele: ${_currentSymptom.label}?',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Síntoma ${_currentSymptomIndex + 1} de $total',
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-
-            // Selector de 5 niveles
-            PainLevelSelector(
-              selected: _selectedLevel,
-              onSelected: (level) => setState(() => _selectedLevel = level),
-            ),
-            const SizedBox(height: 24),
-
-            ElevatedButton(
-              onPressed: isLoading ? null : _onNext,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: _selectedLevel != null
-                    ? _buttonColor(_selectedLevel!)
-                    : null,
-                foregroundColor: _selectedLevel != null ? Colors.white : null,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 8),
+              Text(
+                '¿Cuánto te duele: ${_currentSymptom.label}?',
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
-              child: isLoading
-                  ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
-                    )
-                  : Text(
-                      _isLast ? 'Confirmar' : 'Siguiente síntoma →',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Síntoma ${_currentSymptomIndex + 1} de $total',
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+
+              // Selector de 5 niveles
+              PainLevelSelector(
+                selected: _selectedLevel,
+                onSelected: (level) => setState(() => _selectedLevel = level),
+              ),
+              const SizedBox(height: 24),
+
+              ElevatedButton(
+                onPressed: isLoading ? null : _onNext,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: _selectedLevel != null
+                      ? _buttonColor(_selectedLevel!)
+                      : null,
+                  foregroundColor: _selectedLevel != null ? Colors.white : null,
+                ),
+                child: isLoading
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    : Text(
+                        _isLast ? 'Confirmar' : 'Siguiente síntoma →',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

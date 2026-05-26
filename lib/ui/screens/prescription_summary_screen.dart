@@ -12,13 +12,25 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../data/models/prescription_model.dart';
 import 'doctor_dashboard_screen.dart';
+import 'patient_home_screen.dart';
 
 /// Pantalla resumen de la receta emitida con QR real, distribución
 /// vía WhatsApp/SMS (HU 12 + HU 13) y descarga offline (HU 14).
+///
+/// Comportamiento dual:
+/// - **Doctor** (`isDoctor = true`): vista de confirmación sin botones de
+///   descarga/compartir. Solo "Volver al Panel Médico".
+/// - **Paciente** (`isDoctor = false`): todos los botones de descarga,
+///   WhatsApp, SMS, compartir y "Volver al Inicio".
 class PrescriptionSummaryScreen extends StatefulWidget {
   final Prescription prescription;
+  final bool isDoctor;
 
-  const PrescriptionSummaryScreen({super.key, required this.prescription});
+  const PrescriptionSummaryScreen({
+    super.key,
+    required this.prescription,
+    this.isDoctor = false,
+  });
 
   @override
   State<PrescriptionSummaryScreen> createState() =>
@@ -215,7 +227,7 @@ class _PrescriptionSummaryScreenState extends State<PrescriptionSummaryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Receta Emitida'),
+        title: Text(widget.isDoctor ? 'Receta Emitida' : 'Tu Receta'),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
@@ -234,15 +246,31 @@ class _PrescriptionSummaryScreenState extends State<PrescriptionSummaryScreen> {
                   child: Column(
                     children: [
                       // Ícono de éxito
-                      const Icon(Icons.check_circle,
-                          size: 72, color: Color(0xFF4CAF50)),
+                      Icon(
+                        Icons.check_circle,
+                        size: 72,
+                        color: widget.isDoctor
+                            ? const Color(0xFF1976D2)
+                            : const Color(0xFF4CAF50),
+                      ),
                       const SizedBox(height: 16),
-                      const Text(
-                        '¡Receta emitida exitosamente!',
+                      Text(
+                        widget.isDoctor
+                            ? '¡Receta emitida y enviada!'
+                            : '¡Receta emitida exitosamente!',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 22, fontWeight: FontWeight.bold),
                       ),
+                      if (widget.isDoctor) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          'La receta ya está disponible para el paciente.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 14, color: Colors.grey.shade600),
+                        ),
+                      ],
                       const SizedBox(height: 8),
                       Text(
                         'Paciente: ${rx.patientId}',
@@ -342,116 +370,145 @@ class _PrescriptionSummaryScreenState extends State<PrescriptionSummaryScreen> {
 
               const SizedBox(height: 24),
 
-              // ── Descargar a mi celular (HU 14) ──
-              ElevatedButton.icon(
-                onPressed: (_sharing || _saved) ? null : _downloadToGallery,
-                icon: Icon(
-                  _saved ? Icons.check_circle : Icons.download_rounded,
-                  color: Colors.white,
-                  size: 28,
-                ),
-                label: Text(
-                  _saved
-                      ? '¡Guardada en galería!'
-                      : 'Descargar a mi celular',
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _saved
-                      ? const Color(0xFF4CAF50)
-                      : const Color(0xFF1976D2),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+              // ── Contenido según el rol ──
+              if (!widget.isDoctor) ...[
+                // ── PACIENTE: Descargar a mi celular (HU 14) ──
+                ElevatedButton.icon(
+                  onPressed: (_sharing || _saved) ? null : _downloadToGallery,
+                  icon: Icon(
+                    _saved ? Icons.check_circle : Icons.download_rounded,
+                    color: Colors.white,
+                    size: 28,
                   ),
-                  elevation: 4,
-                ),
-              ),
-              if (_saved)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Puedes mostrar esta imagen en la farmacia\nincluso sin conexión a internet',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13, color: Colors.green.shade700),
+                  label: Text(
+                    _saved
+                        ? '¡Guardada en galería!'
+                        : 'Descargar a mi celular',
+                    style: const TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _saved
+                        ? const Color(0xFF4CAF50)
+                        : const Color(0xFF1976D2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 4,
                   ),
                 ),
-
-              const SizedBox(height: 24),
-
-              // ── Botones de distribución (HU 13) ──
-              const Text(
-                'Enviar receta al paciente:',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 12),
-
-              // WhatsApp
-              ElevatedButton.icon(
-                onPressed: _sharing ? null : _shareWhatsApp,
-                icon: const Icon(Icons.chat, color: Colors.white),
-                label: const Text('Enviar por WhatsApp'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF25D366),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                if (_saved)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      'Puedes mostrar esta imagen en la farmacia\nincluso sin conexión a internet',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 13, color: Colors.green.shade700),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 10),
 
-              // SMS
-              OutlinedButton.icon(
-                onPressed: _sharing ? null : _shareSMS,
-                icon: const Icon(Icons.sms),
-                label: const Text('Enviar por SMS'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
+                const SizedBox(height: 24),
 
-              // Compartir general
-              OutlinedButton.icon(
-                onPressed: _sharing ? null : _shareGeneral,
-                icon: const Icon(Icons.share),
-                label: const Text('Compartir de otra forma'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                // ── PACIENTE: Botones de distribución (HU 13) ──
+                const Text(
+                  'Compartir receta:',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-              ),
-
-              if (_sharing) ...[
                 const SizedBox(height: 12),
-                const Center(child: CircularProgressIndicator()),
+
+                // WhatsApp
+                ElevatedButton.icon(
+                  onPressed: _sharing ? null : _shareWhatsApp,
+                  icon: const Icon(Icons.chat, color: Colors.white),
+                  label: const Text('Enviar por WhatsApp'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF25D366),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // SMS
+                OutlinedButton.icon(
+                  onPressed: _sharing ? null : _shareSMS,
+                  icon: const Icon(Icons.sms),
+                  label: const Text('Enviar por SMS'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Compartir general
+                OutlinedButton.icon(
+                  onPressed: _sharing ? null : _shareGeneral,
+                  icon: const Icon(Icons.share),
+                  label: const Text('Compartir de otra forma'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+
+                if (_sharing) ...[
+                  const SizedBox(height: 12),
+                  const Center(child: CircularProgressIndicator()),
+                ],
+
+                const SizedBox(height: 24),
+
+                // Botón volver al lobby del paciente
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (_) => const PatientHomeScreen()),
+                      (route) => false,
+                    );
+                  },
+                  icon: const Icon(Icons.home),
+                  label: const Text('Volver al Inicio'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ] else ...[
+                // ── DOCTOR: Solo botón de volver al panel ──
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (_) => const DoctorDashboardScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.dashboard),
+                  label: const Text('Volver al Panel Médico'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: const Color(0xFF1976D2),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
               ],
 
-              const SizedBox(height: 24),
-
-              // Botón volver al panel médico
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                        builder: (_) => const DoctorDashboardScreen()),
-                  );
-                },
-                icon: const Icon(Icons.home),
-                label: const Text('Volver al Panel'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-              ),
+              // Espacio extra para evitar que la barra de navegación tape el último botón
+              const SizedBox(height: 16),
             ],
           ),
         ),

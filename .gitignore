@@ -45,6 +45,7 @@ app.*.map.json
 /android/app/release
 
 # Datos del Sprint
-HU's.txt
+Items.txt
 TaskBugs.txt
-DailysPerHU.txt
+Commits.txt
+devops/

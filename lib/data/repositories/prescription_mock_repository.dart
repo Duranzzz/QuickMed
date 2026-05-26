@@ -3,6 +3,9 @@ import '../models/prescription_model.dart';
 /// Repositorio mock para recetas médicas.
 /// Almacena en memoria. En producción sería una API REST + base de datos.
 class PrescriptionMockRepository {
+  /// Singleton compartido para la demo (doctor y paciente usan la misma instancia).
+  static final PrescriptionMockRepository shared = PrescriptionMockRepository();
+
   /// "Base de datos" en memoria indexada por qrHash para búsqueda rápida.
   final Map<String, Prescription> _prescriptions = {};
 

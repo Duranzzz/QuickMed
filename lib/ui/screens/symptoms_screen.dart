@@ -49,7 +49,6 @@ class _SymptomsScreenState extends State<SymptomsScreen> {
       appBar: AppBar(
         title: const Text('¿Qué te molesta?'),
         centerTitle: true,
-        automaticallyImplyLeading: false,
       ),
       body: triageProvider.isLoading
           ? const Center(child: CircularProgressIndicator())

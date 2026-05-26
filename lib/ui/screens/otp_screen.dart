@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
-import 'symptoms_screen.dart';
+import 'patient_home_screen.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -87,8 +87,9 @@ class _OtpScreenState extends State<OtpScreen> with SingleTickerProviderStateMix
 
     if (error == null) {
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const SymptomsScreen()),
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const PatientHomeScreen()),
+        (route) => false,
       );
     } else {
       setState(() {

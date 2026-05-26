@@ -31,7 +31,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
 
     if (admitted != null && mounted) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const CallScreen(isDoctor: true)),
+        MaterialPageRoute(
+          builder: (_) => CallScreen(isDoctor: true, patientId: userId),
+        ),
       );
     }
   }
@@ -56,7 +58,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           ),
         ],
       ),
-      body: triageProvider.isLoading
+      body: SafeArea(
+        child: triageProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : queue.isEmpty
               ? Center(
@@ -143,6 +146,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     ],
                   ),
                 ),
+      ),
     );
   }
 }

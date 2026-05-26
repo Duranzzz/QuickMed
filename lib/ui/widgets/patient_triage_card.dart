@@ -70,18 +70,23 @@ class PatientTriageCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: _isUrgent
             ? const Color(0xFFFFF5F5)
-            : Theme.of(context).colorScheme.surfaceContainerHighest,
+            : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: _borderColor, width: _isUrgent ? 2.5 : 1.5),
-        boxShadow: _isUrgent
-            ? [
-                BoxShadow(
-                  color: const Color(0xFFF44336).withOpacity(0.25),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
-              ]
-            : [],
+        boxShadow: [
+          if (_isUrgent)
+            BoxShadow(
+              color: const Color(0xFFF44336).withOpacity(0.25),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          else
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),

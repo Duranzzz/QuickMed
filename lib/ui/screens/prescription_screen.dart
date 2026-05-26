@@ -4,8 +4,8 @@ import '../../data/models/prescription_model.dart';
 import '../../data/repositories/prescription_mock_repository.dart';
 import 'prescription_summary_screen.dart';
 
-/// Repositorio global compartido (singleton simple para la demo).
-final prescriptionRepository = PrescriptionMockRepository();
+/// Repositorio global compartido.
+final prescriptionRepository = PrescriptionMockRepository.shared;
 
 class PrescriptionScreen extends StatefulWidget {
   final String patientId;
@@ -55,7 +55,10 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
       setState(() => _isSaving = false);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => PrescriptionSummaryScreen(prescription: prescription),
+          builder: (_) => PrescriptionSummaryScreen(
+            prescription: prescription,
+            isDoctor: true,
+          ),
         ),
       );
     }
